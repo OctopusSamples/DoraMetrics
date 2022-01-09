@@ -29,6 +29,7 @@ args = parser.parse_args()
 headers = {"X-Octopus-ApiKey": args.octopus_api_key}
 github_auth = HTTPBasicAuth(args.github_user, args.github_token)
 
+
 def compare_dates(date1, date2):
     # Python 3.6 doesn't handle the colon in the timezone of a string like "2022-01-04T04:23:02.941+00:00".
     # So we need to manually strip it out.
@@ -39,6 +40,7 @@ def compare_dates(date1, date2):
     if date1_parsed == date2_parsed:
         return 0
     return 1
+
 
 def get_space_id(space_name):
     url = args.octopus_url + "/api/spaces?partialName=" + space_name.strip() + "&take=1000"
@@ -60,7 +62,7 @@ def get_resource_id(space_id, resource_type, resource_name):
         return None
 
     url = args.octopus_url + "/api/" + space_id + "/" + resource_type + "?partialName=" \
-        + resource_name.strip() + "&take=1000"
+          + resource_name.strip() + "&take=1000"
     response = get(url, headers=headers)
     json = response.json()
 
@@ -201,5 +203,6 @@ def get_deployment_frequency_summary(deployment_frequency):
         sys.stdout.write("Deployment frequency: Low\n")
 
 
+sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
 get_change_lead_time_summary(get_change_lead_time())
 get_deployment_frequency_summary(get_deployment_frequency())
