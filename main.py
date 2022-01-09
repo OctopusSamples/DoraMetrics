@@ -1,11 +1,8 @@
-import os
 import sys
 from datetime import datetime
 from functools import cmp_to_key
 from requests.auth import HTTPBasicAuth
-import tempfile
 from requests import get
-import zipfile
 import argparse
 
 parser = argparse.ArgumentParser(description='Scan a deployment for a dependency.')
@@ -102,22 +99,6 @@ def get_deployments(space_id, environment_id, project_id):
     sorted_list = sorted(filtered_items, key=cmp_to_key(compare_dates), reverse=True)
 
     return sorted_list
-
-
-def get_earliest_commit_date(release):
-    return None
-
-
-def get_change_lead_time(release):
-    return None
-
-
-def release_has_critical_issue(release):
-    return None
-
-
-def get_average_critical_issue_open_time():
-    return None
 
 
 def parse_github_date(date_string):
