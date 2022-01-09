@@ -236,15 +236,15 @@ def get_deployment_frequency_summary(deployment_frequency):
     # Multiple times per day
     elif deployment_frequency < 60 * 60 * 12:
         sys.stdout.write("Deployment frequency: Elite (Average " + str(round(deployment_frequency / 60 / 60, 2))
-                         + " hours between commit and deploy)\n")
+                         + " hours between deployments)\n")
     # Every month
     elif deployment_frequency < 60 * 60 * 24 * 31:
         sys.stdout.write("Deployment frequency: High (Average " + str(round(deployment_frequency / 60 / 60 / 24, 2))
-                         + " days between commit and deploy)\n")
+                         + " days between deployments)\n")
     # Every six months
     elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
         sys.stdout.write("Deployment frequency: Medium (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)\n")
+                         + " months bbetween deployments)\n")
     # Longer than six months
     else:
         sys.stdout.write("Deployment frequency: Low (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
@@ -268,20 +268,20 @@ def get_time_to_restore_service_summary(restore_time):
     # One hour
     elif restore_time < 60 * 60:
         sys.stdout.write("Time to restore service: Elite (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between commit and deploy)\n")
+                         + " hours between issue opened and deployment)\n")
     # Every month
     elif restore_time < 60 * 60 * 24:
         sys.stdout.write("Time to restore service: High (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between commit and deploy)\n")
+                         + " hours between issue opened and deployment)\n")
     # Every six months
     elif restore_time < 60 * 60 * 24 * 7:
         sys.stdout.write("Time to restore service: Medium (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " days between commit and deploy)\n")
+                         + " hours between issue opened and deployment)\n")
     # Technically the report says longer than six months is low, but there is no measurement
     # between week and six months, so we'll say longer than a week is low.
     else:
         sys.stdout.write("Deployment frequency: Low (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " days between commit and deploy)\n")
+                         + " hours between issue opened and deployment)\n")
 
 
 sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
