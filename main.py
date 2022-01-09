@@ -176,7 +176,7 @@ def get_time_to_restore_service():
                         restore_service_times.append(deployment_date - closed_date)
     if len(restore_service_times) != 0:
         return sum(restore_service_times) / len(restore_service_times)
-    return 0
+    return None
 
 
 def get_deployment_frequency():
@@ -214,10 +214,12 @@ def get_change_failure_rate():
                     ++releases_with_issues
     if len(deployments) != 0:
         return releases_with_issues / len(deployments)
-    return 0
+    return None
 
 
 def get_change_lead_time_summary(lead_time):
+    if lead_time is None:
+        sys.stdout.write("Change lead time: N/A (no deployments or commits)\n")
     # One hour
     if lead_time < 60 * 60:
         sys.stdout.write("Change lead time: Elite (hourly)\n")
@@ -233,8 +235,10 @@ def get_change_lead_time_summary(lead_time):
 
 
 def get_deployment_frequency_summary(deployment_frequency):
+    if deployment_frequency is None:
+        sys.stdout.write("Deployment frequency: N/A (no deployments found)\n")
     # Every day
-    if deployment_frequency < 60 * 60 * 24:
+    elif deployment_frequency < 60 * 60 * 24:
         sys.stdout.write("Deployment frequency: Elite (daily)\n")
     # Every month
     elif deployment_frequency < 60 * 60 * 24 * 31:
@@ -248,17 +252,21 @@ def get_deployment_frequency_summary(deployment_frequency):
 
 
 def get_change_failure_rate_summary(failure_percent):
+    if failure_percent is None:
+        sys.stdout.write("Time to restore service: N/A (no issues found)\n")
     # 15% or less
-    if failure_percent <= 0.15:
+    elif failure_percent <= 0.15:
         sys.stdout.write("Change failure rate: Elite (<= 15%)\n")
     # Interestingly, everything else is reported as High to Low
     else:
         sys.stdout.write("Change failure rate: Low (> 15%)\n")
 
 
-def get_deployment_frequency_summary(restore_time):
+def get_time_to_restore_service_summary(restore_time):
+    if restore_time is None:
+        sys.stdout.write("Time to restore service: N/A (no issues found)\n")
     # One hour
-    if restore_time < 60 * 60 * 24:
+    elif restore_time < 60 * 60 * 24:
         sys.stdout.write("Time to restore service: Elite (hour or less)\n")
     # Every month
     elif restore_time < 60 * 60 * 24:
@@ -276,4 +284,4 @@ sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + 
 get_change_lead_time_summary(get_change_lead_time())
 get_deployment_frequency_summary(get_deployment_frequency())
 get_change_failure_rate_summary(get_change_failure_rate())
-get_deployment_frequency_summary(get_time_to_restore_service())
+get_time_to_restore_service_summary(get_time_to_restore_service())
