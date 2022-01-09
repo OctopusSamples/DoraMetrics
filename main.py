@@ -207,12 +207,11 @@ def get_change_failure_rate():
         project_id = get_resource_id(space_id, "projects", project)
         deployments = get_deployments(space_id, environment_id, project_id)
         for deployment in deployments:
-            earliest_commit = None
             release = get_resource(space_id, "releases", deployment["ReleaseId"])
             for buildInfo in release["BuildInformation"]:
                 if len(buildInfo["WorkItems"]) != 0:
                     ++releases_with_issues
-    if len(deployments) != 0:
+    if releases_with_issues != 0 and len(deployments) != 0:
         return releases_with_issues / len(deployments)
     return None
 
@@ -253,7 +252,7 @@ def get_deployment_frequency_summary(deployment_frequency):
 
 def get_change_failure_rate_summary(failure_percent):
     if failure_percent is None:
-        sys.stdout.write("Time to restore service: N/A (no issues found)\n")
+        sys.stdout.write("Change failure rate: N/A (no issues or deployments found)\n")
     # 15% or less
     elif failure_percent <= 0.15:
         sys.stdout.write("Change failure rate: Elite (<= 15%)\n")
