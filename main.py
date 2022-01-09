@@ -210,7 +210,17 @@ def get_change_failure_rate():
             release = get_resource(space_id, "releases", deployment["ReleaseId"])
             for buildInfo in release["BuildInformation"]:
                 if len(buildInfo["WorkItems"]) != 0:
-                    ++releases_with_issues
+                    # Note this measurement is not quite correct. Technically, the change failure rate
+                    # measures deployments that result in a degraded service. We're measuring
+                    # deployments that included fixes. If you made 4 deployments with issues,
+                    # and fixed all 4 with a single subsequent deployment, this logic only detects one
+                    # "failed" deployment instead of 4.
+                    #
+                    # To do a true measurement, issues must track the deployments that introduced the issue.
+                    # There is no such out of the box field in GitHub actions though, so for simplicity
+                    # we assume the rate at which fixes are deployed is a good proxy for measuring the
+                    # rate at which bugs are introduced.
+                    releases_with_issues = releases_with_issues + 1
     if releases_with_issues != 0 and len(deployments) != 0:
         return releases_with_issues / len(deployments)
     return None
