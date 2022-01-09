@@ -173,6 +173,24 @@ def get_deployment_frequency():
     return None
 
 
+def get_change_failure_rate():
+    releases_with_issues = 0
+    space_id = get_space_id(args.octopus_space)
+    environment_id = get_resource_id(space_id, "environments", args.octopus_environment)
+    for project in args.octopus_project.split(","):
+        project_id = get_resource_id(space_id, "projects", project)
+        deployments = get_deployments(space_id, environment_id, project_id)
+        for deployment in deployments:
+            earliest_commit = None
+            release = get_resource(space_id, "releases", deployment["ReleaseId"])
+            for buildInfo in release["BuildInformation"]:
+                if len(buildInfo["WorkItems"]) != 0:
+                    ++releases_with_issues
+    if len(deployments) != 0:
+        return releases_with_issues / len(deployments)
+    return 0
+
+
 def get_change_lead_time_summary(lead_time):
     # One hour
     if lead_time < 60 * 60:
@@ -203,6 +221,16 @@ def get_deployment_frequency_summary(deployment_frequency):
         sys.stdout.write("Deployment frequency: Low\n")
 
 
+def get_change_failure_rate_summary(failure_percent):
+    # 15% or less
+    if failure_percent <= 0.15:
+        sys.stdout.write("Change failure rate: Elite\n")
+    # Interestingly, everything else is reported as High to Low
+    else:
+        sys.stdout.write("Change failure rate: Low\n")
+
+
 sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
 get_change_lead_time_summary(get_change_lead_time())
 get_deployment_frequency_summary(get_deployment_frequency())
+get_change_failure_rate_summary(get_change_failure_rate())
