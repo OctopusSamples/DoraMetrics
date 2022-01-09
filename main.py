@@ -182,11 +182,13 @@ def get_deployment_frequency():
 
 def get_change_failure_rate():
     releases_with_issues = 0
+    deployment_count = 0
     space_id = get_space_id(args.octopus_space)
     environment_id = get_resource_id(space_id, "environments", args.octopus_environment)
     for project in args.octopus_project.split(","):
         project_id = get_resource_id(space_id, "projects", project)
         deployments = get_deployments(space_id, environment_id, project_id)
+        deployment_count = deployment_count + len(deployments)
         for deployment in deployments:
             release = get_resource(space_id, "releases", deployment["ReleaseId"])
             for buildInfo in release["BuildInformation"]:
@@ -202,8 +204,8 @@ def get_change_failure_rate():
                     # we assume the rate at which fixes are deployed is a good proxy for measuring the
                     # rate at which bugs are introduced.
                     releases_with_issues = releases_with_issues + 1
-    if releases_with_issues != 0 and len(deployments) != 0:
-        return releases_with_issues / len(deployments)
+    if releases_with_issues != 0 and deployment_count != 0:
+        return releases_with_issues / deployment_count
     return None
 
 
