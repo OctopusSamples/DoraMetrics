@@ -151,6 +151,26 @@ def get_change_lead_time():
     return None
 
 
+def get_deployment_frequency():
+    earliest_deployment = None
+    latest_deployment = None
+    space_id = get_space_id(args.octopus_space)
+    environment_id = get_resource_id(space_id, "environments", args.octopus_environment)
+    for project in args.octopus_project.split(","):
+        project_id = get_resource_id(space_id, "projects", project)
+        deployments = get_deployments(space_id, environment_id, project_id)
+        for deployment in deployments:
+            created = get_octopus_date(deployment["Created"])
+            if earliest_deployment is None or earliest_deployment > created:
+                earliest_deployment = created
+            if latest_deployment is None or latest_deployment < created:
+                latest_deployment = created
+    if latest_deployment is not None:
+        # return average seconds / deployment
+        return (latest_deployment - earliest_deployment).total_seconds() / len(deployments)
+    return None
+
+
 def get_change_lead_time_summary(lead_time):
     # One hour
     if lead_time < 60 * 60:
@@ -168,18 +188,18 @@ def get_change_lead_time_summary(lead_time):
 
 def get_deployment_frequency_summary(deployment_frequency):
     # Every day
-    if lead_time < 60 * 60 * 24:
-        sys.stdout.write("Change lead time: Elite\n")
+    if deployment_frequency < 60 * 60 * 24:
+        sys.stdout.write("Deployment frequency: Elite\n")
     # Every month
-    elif lead_time < 60 * 60 * 24 * 31:
-        sys.stdout.write("Change lead time: High\n")
+    elif deployment_frequency < 60 * 60 * 24 * 31:
+        sys.stdout.write("Deployment frequency: High\n")
     # Every six months
-    elif lead_time < 60 * 60 * 24 * 31 * 6:
-        sys.stdout.write("Change lead time: Medium\n")
+    elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
+        sys.stdout.write("Deployment frequency: Medium\n")
     # Longer than six months
     else:
-        sys.stdout.write("Change lead time: Low\n")
+        sys.stdout.write("Deployment frequency: Low\n")
 
 
-lead_time = get_change_lead_time()
-get_change_lead_time_summary(lead_time)
+get_change_lead_time_summary(get_change_lead_time())
+get_deployment_frequency_summary(get_deployment_frequency())
