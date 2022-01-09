@@ -161,6 +161,7 @@ def get_time_to_restore_service():
 
 
 def get_deployment_frequency():
+    deployment_count = 0
     earliest_deployment = None
     latest_deployment = None
     space_id = get_space_id(args.octopus_space)
@@ -168,6 +169,7 @@ def get_deployment_frequency():
     for project in args.octopus_project.split(","):
         project_id = get_resource_id(space_id, "projects", project)
         deployments = get_deployments(space_id, environment_id, project_id)
+        deployment_count = deployment_count + len(deployments)
         for deployment in deployments:
             created = parse_octopus_date(deployment["Created"])
             if earliest_deployment is None or earliest_deployment > created:
@@ -176,7 +178,7 @@ def get_deployment_frequency():
                 latest_deployment = created
     if latest_deployment is not None:
         # return average seconds / deployment
-        return (latest_deployment - earliest_deployment).total_seconds() / len(deployments)
+        return (latest_deployment - earliest_deployment).total_seconds() / deployment_count
     return None
 
 
