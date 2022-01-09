@@ -152,12 +152,31 @@ def get_change_lead_time():
 
 
 def get_change_lead_time_summary(lead_time):
-    if lead_time < 60 * 60 * 24:
+    # One hour
+    if lead_time < 60 * 60:
         sys.stdout.write("Change lead time: Elite\n")
-    elif lead_time < 60 * 60 * 24 * 31:
+    # Every week
+    elif lead_time < 60 * 60 * 24 * 7:
         sys.stdout.write("Change lead time: High\n")
+    # Every six months
     elif lead_time < 60 * 60 * 24 * 31 * 6:
         sys.stdout.write("Change lead time: Medium\n")
+    # Longer than six months
+    else:
+        sys.stdout.write("Change lead time: Low\n")
+
+
+def get_deployment_frequency_summary(deployment_frequency):
+    # Every day
+    if lead_time < 60 * 60 * 24:
+        sys.stdout.write("Change lead time: Elite\n")
+    # Every month
+    elif lead_time < 60 * 60 * 24 * 31:
+        sys.stdout.write("Change lead time: High\n")
+    # Every six months
+    elif lead_time < 60 * 60 * 24 * 31 * 6:
+        sys.stdout.write("Change lead time: Medium\n")
+    # Longer than six months
     else:
         sys.stdout.write("Change lead time: Low\n")
 
