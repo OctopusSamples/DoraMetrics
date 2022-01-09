@@ -120,11 +120,15 @@ def get_average_critical_issue_open_time():
     return None
 
 
-def get_commit_date(date_string):
+def parse_github_date(date_string):
+    if date_string is None:
+        return None
     return datetime.strptime(date_string.replace("Z", "+0000"), '%Y-%m-%dT%H:%M:%S%z')
 
 
-def get_octopus_date(date_string):
+def parse_octopus_date(date_string):
+    if date_string is None:
+        return None
     return datetime.strptime(date_string[:-3] + date_string[-2:], '%Y-%m-%dT%H:%M:%S.%f%z')
 
 
@@ -143,14 +147,36 @@ def get_change_lead_time():
                     api_url = commit["LinkUrl"].replace("github.com", "api.github.com/repos") \
                         .replace("commit", "commits")
                     commit_response = get(api_url, auth=github_auth)
-                    date_parsed = get_commit_date(commit_response.json()["commit"]["committer"]["date"])
+                    date_parsed = parse_github_date(commit_response.json()["commit"]["committer"]["date"])
                     if earliest_commit is None or earliest_commit > date_parsed:
                         earliest_commit = date_parsed
             if earliest_commit is not None:
-                change_lead_times.append((get_octopus_date(deployment["Created"]) - earliest_commit).total_seconds())
+                change_lead_times.append((parse_octopus_date(deployment["Created"]) - earliest_commit).total_seconds())
     if len(change_lead_times) != 0:
         return sum(change_lead_times) / len(change_lead_times)
     return None
+
+
+def get_time_to_restore_service():
+    restore_service_times = []
+    space_id = get_space_id(args.octopus_space)
+    environment_id = get_resource_id(space_id, "environments", args.octopus_environment)
+    for project in args.octopus_project.split(","):
+        project_id = get_resource_id(space_id, "projects", project)
+        deployments = get_deployments(space_id, environment_id, project_id)
+        for deployment in deployments:
+            deployment_date = parse_octopus_date(deployment["Created"])
+            release = get_resource(space_id, "releases", deployment["ReleaseId"])
+            for buildInfo in release["BuildInformation"]:
+                for work_item in buildInfo["WorkItems"]:
+                    api_url = work_item["LinkUrl"].replace("github.com", "api.github.com/repos")
+                    commit_response = get(api_url, auth=github_auth)
+                    closed_date = parse_github_date(commit_response.json()["closed_at"])
+                    if closed_date is not None:
+                        restore_service_times.append(deployment_date - closed_date)
+    if len(restore_service_times) != 0:
+        return sum(restore_service_times) / len(restore_service_times)
+    return 0
 
 
 def get_deployment_frequency():
@@ -162,7 +188,7 @@ def get_deployment_frequency():
         project_id = get_resource_id(space_id, "projects", project)
         deployments = get_deployments(space_id, environment_id, project_id)
         for deployment in deployments:
-            created = get_octopus_date(deployment["Created"])
+            created = parse_octopus_date(deployment["Created"])
             if earliest_deployment is None or earliest_deployment > created:
                 earliest_deployment = created
             if latest_deployment is None or latest_deployment < created:
@@ -230,7 +256,24 @@ def get_change_failure_rate_summary(failure_percent):
         sys.stdout.write("Change failure rate: Low (> 15%)\n")
 
 
+def get_deployment_frequency_summary(restore_time):
+    # One hour
+    if restore_time < 60 * 60 * 24:
+        sys.stdout.write("Time to restore service: Elite (hour or less)\n")
+    # Every month
+    elif restore_time < 60 * 60 * 24:
+        sys.stdout.write("Time to restore service: High (day or less)\n")
+    # Every six months
+    elif restore_time < 60 * 60 * 24 * 7:
+        sys.stdout.write("Time to restore service: Medium (week or less)\n")
+    # Technically the report says longer than six months is low, but there is no measurement
+    # between week and six months, so we'll say longer than a week is low.
+    else:
+        sys.stdout.write("Deployment frequency: Low (longer than week)\n")
+
+
 sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
 get_change_lead_time_summary(get_change_lead_time())
 get_deployment_frequency_summary(get_deployment_frequency())
 get_change_failure_rate_summary(get_change_failure_rate())
+get_deployment_frequency_summary(get_time_to_restore_service())
