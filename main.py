@@ -171,9 +171,9 @@ def get_time_to_restore_service():
                 for work_item in buildInfo["WorkItems"]:
                     api_url = work_item["LinkUrl"].replace("github.com", "api.github.com/repos")
                     commit_response = get(api_url, auth=github_auth)
-                    closed_date = parse_github_date(commit_response.json()["closed_at"])
-                    if closed_date is not None:
-                        restore_service_times.append(deployment_date - closed_date)
+                    created_date = parse_github_date(commit_response.json()["created_at"])
+                    if created_date is not None:
+                        restore_service_times.append(deployment_date - created_date)
     if len(restore_service_times) != 0:
         return sum(restore_service_times) / len(restore_service_times)
     return None
@@ -273,7 +273,7 @@ def get_change_failure_rate_summary(failure_percent):
 
 def get_time_to_restore_service_summary(restore_time):
     if restore_time is None:
-        sys.stdout.write("Time to restore service: N/A (no issues found)\n")
+        sys.stdout.write("Time to restore service: N/A (no issues or deployments found)\n")
     # One hour
     elif restore_time < 60 * 60 * 24:
         sys.stdout.write("Time to restore service: Elite (hour or less)\n")
