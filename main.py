@@ -4,8 +4,9 @@ from functools import cmp_to_key
 from requests.auth import HTTPBasicAuth
 from requests import get
 import argparse
+import pytz
 
-parser = argparse.ArgumentParser(description='Scan a deployment for a dependency.')
+parser = argparse.ArgumentParser(description='Calculate the DORA metrics.')
 parser.add_argument('--octopusUrl', dest='octopus_url', action='store', help='The Octopus server URL',
                     required=True)
 parser.add_argument('--octopusApiKey', dest='octopus_api_key', action='store', help='The Octopus API key',
@@ -177,8 +178,10 @@ def get_deployment_frequency():
             if latest_deployment is None or latest_deployment < created:
                 latest_deployment = created
     if latest_deployment is not None:
-        # return average seconds / deployment
-        return (latest_deployment - earliest_deployment).total_seconds() / deployment_count
+        # return average seconds / deployment from the earliest deployment to now
+        return (datetime.now(pytz.utc) - earliest_deployment).total_seconds() / deployment_count
+        # You could also return the frequency between the first and last deployment
+        # return (latest_deployment - earliest_deployment).total_seconds() / deployment_count
     return None
 
 
