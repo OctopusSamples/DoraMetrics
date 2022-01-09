@@ -107,30 +107,6 @@ jobs:
         asset_path: DoraMetrics.${{ steps.determine_version.outputs.fullSemVer }}.zip
         asset_name: DoraMetrics.${{ steps.determine_version.outputs.fullSemVer }}.zip
         asset_content_type: application/octet-stream
-    - name: Push to Octopus
-      uses: OctopusDeploy/push-package-action@v1.1.1
-      with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        packages: DoraMetrics.${{ steps.determine_version.outputs.fullSemVer }}.zip
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        overwrite_mode: OverwriteExisting
-    - name: Generate Octopus Deploy build information
-      uses: xo-energy/action-octopus-build-information@v1.1.2
-      with:
-        octopus_api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        octopus_project: DoraMetrics
-        octopus_server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        push_version: ${{ steps.determine_version.outputs.fullSemVer }}
-        push_package_ids: DoraMetrics
-        push_overwrite_mode: OverwriteExisting
-        output_path: octopus
-    - name: Create Octopus Release
-      uses: OctopusDeploy/create-release-action@v1.1.1
-      with:
-        api_key: ${{ secrets.OCTOPUS_API_TOKEN }}
-        project: DoraMetrics
-        server: ${{ secrets.OCTOPUS_SERVER_URL }}
-        deploy_to: Development
 name: Python Build
 'on':
   workflow_dispatch: {}
