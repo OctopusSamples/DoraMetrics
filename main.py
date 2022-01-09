@@ -194,40 +194,40 @@ def get_change_failure_rate():
 def get_change_lead_time_summary(lead_time):
     # One hour
     if lead_time < 60 * 60:
-        sys.stdout.write("Change lead time: Elite\n")
+        sys.stdout.write("Change lead time: Elite (hourly)\n")
     # Every week
     elif lead_time < 60 * 60 * 24 * 7:
-        sys.stdout.write("Change lead time: High\n")
+        sys.stdout.write("Change lead time: High (weekly)\n")
     # Every six months
     elif lead_time < 60 * 60 * 24 * 31 * 6:
-        sys.stdout.write("Change lead time: Medium\n")
+        sys.stdout.write("Change lead time: Medium (six monthly)\n")
     # Longer than six months
     else:
-        sys.stdout.write("Change lead time: Low\n")
+        sys.stdout.write("Change lead time: Low (longer than six months)\n")
 
 
 def get_deployment_frequency_summary(deployment_frequency):
     # Every day
     if deployment_frequency < 60 * 60 * 24:
-        sys.stdout.write("Deployment frequency: Elite\n")
+        sys.stdout.write("Deployment frequency: Elite (daily)\n")
     # Every month
     elif deployment_frequency < 60 * 60 * 24 * 31:
-        sys.stdout.write("Deployment frequency: High\n")
+        sys.stdout.write("Deployment frequency: High (monthly)\n")
     # Every six months
     elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
-        sys.stdout.write("Deployment frequency: Medium\n")
+        sys.stdout.write("Deployment frequency: Medium (six monthly)\n")
     # Longer than six months
     else:
-        sys.stdout.write("Deployment frequency: Low\n")
+        sys.stdout.write("Deployment frequency: Low (more than every six months)\n")
 
 
 def get_change_failure_rate_summary(failure_percent):
     # 15% or less
     if failure_percent <= 0.15:
-        sys.stdout.write("Change failure rate: Elite\n")
+        sys.stdout.write("Change failure rate: Elite (<= 15%)\n")
     # Interestingly, everything else is reported as High to Low
     else:
-        sys.stdout.write("Change failure rate: Low\n")
+        sys.stdout.write("Change failure rate: Low (> 15%)\n")
 
 
 sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
