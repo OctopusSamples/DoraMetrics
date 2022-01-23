@@ -218,19 +218,19 @@ def get_change_lead_time_summary(lead_time):
     # One hour
     if lead_time < 60 * 60:
         print("Change lead time: Elite (Average " + str(round(lead_time / 60 / 60, 2))
-                         + " hours between commit and deploy)")
+              + " hours between commit and deploy)")
     # Every week
     elif lead_time < 60 * 60 * 24 * 7:
         print("Change lead time: High (Average " + str(round(lead_time / 60 / 60 / 24, 2))
-                         + " days between commit and deploy)")
+              + " days between commit and deploy)")
     # Every six months
     elif lead_time < 60 * 60 * 24 * 31 * 6:
         print("Change lead time: Medium (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)")
+              + " months between commit and deploy)")
     # Longer than six months
     else:
         print("Change lead time: Low (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)")
+              + " months between commit and deploy)")
 
 
 def get_deployment_frequency_summary(deployment_frequency):
@@ -239,19 +239,19 @@ def get_deployment_frequency_summary(deployment_frequency):
     # Multiple times per day
     elif deployment_frequency < 60 * 60 * 12:
         print("Deployment frequency: Elite (Average " + str(round(deployment_frequency / 60 / 60, 2))
-                         + " hours between deployments)")
+              + " hours between deployments)")
     # Every month
     elif deployment_frequency < 60 * 60 * 24 * 31:
         print("Deployment frequency: High (Average " + str(round(deployment_frequency / 60 / 60 / 24, 2))
-                         + " days between deployments)")
+              + " days between deployments)")
     # Every six months
     elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
         print("Deployment frequency: Medium (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-                         + " months bbetween deployments)")
+              + " months bbetween deployments)")
     # Longer than six months
     else:
         print("Deployment frequency: Low (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)")
+              + " months between commit and deploy)")
 
 
 def get_change_failure_rate_summary(failure_percent):
@@ -271,20 +271,20 @@ def get_time_to_restore_service_summary(restore_time):
     # One hour
     elif restore_time < 60 * 60:
         print("Time to restore service: Elite (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between issue opened and deployment)")
+              + " hours between issue opened and deployment)")
     # Every month
     elif restore_time < 60 * 60 * 24:
         print("Time to restore service: High (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between issue opened and deployment)")
+              + " hours between issue opened and deployment)")
     # Every six months
     elif restore_time < 60 * 60 * 24 * 7:
         print("Time to restore service: Medium (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " hours between issue opened and deployment)")
+              + " hours between issue opened and deployment)")
     # Technically the report says longer than six months is low, but there is no measurement
     # between week and six months, so we'll say longer than a week is low.
     else:
         print("Deployment frequency: Low (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " hours between issue opened and deployment)")
+              + " hours between issue opened and deployment)")
 
 
 print("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment)
