@@ -214,80 +214,80 @@ def get_change_failure_rate():
 
 def get_change_lead_time_summary(lead_time):
     if lead_time is None:
-        sys.stdout.write("Change lead time: N/A (no deployments or commits)\n")
+        print("Change lead time: N/A (no deployments or commits)")
     # One hour
     if lead_time < 60 * 60:
-        sys.stdout.write("Change lead time: Elite (Average " + str(round(lead_time / 60 / 60, 2))
-                         + " hours between commit and deploy)\n")
+        print("Change lead time: Elite (Average " + str(round(lead_time / 60 / 60, 2))
+                         + " hours between commit and deploy)")
     # Every week
     elif lead_time < 60 * 60 * 24 * 7:
-        sys.stdout.write("Change lead time: High (Average " + str(round(lead_time / 60 / 60 / 24, 2))
-                         + " days between commit and deploy)\n")
+        print("Change lead time: High (Average " + str(round(lead_time / 60 / 60 / 24, 2))
+                         + " days between commit and deploy)")
     # Every six months
     elif lead_time < 60 * 60 * 24 * 31 * 6:
-        sys.stdout.write("Change lead time: Medium (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)\n")
+        print("Change lead time: Medium (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
+                         + " months between commit and deploy)")
     # Longer than six months
     else:
-        sys.stdout.write("Change lead time: Low (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)\n")
+        print("Change lead time: Low (Average " + str(round(lead_time / 60 / 60 / 24 / 31, 2))
+                         + " months between commit and deploy)")
 
 
 def get_deployment_frequency_summary(deployment_frequency):
     if deployment_frequency is None:
-        sys.stdout.write("Deployment frequency: N/A (no deployments found)\n")
+        print("Deployment frequency: N/A (no deployments found)")
     # Multiple times per day
     elif deployment_frequency < 60 * 60 * 12:
-        sys.stdout.write("Deployment frequency: Elite (Average " + str(round(deployment_frequency / 60 / 60, 2))
-                         + " hours between deployments)\n")
+        print("Deployment frequency: Elite (Average " + str(round(deployment_frequency / 60 / 60, 2))
+                         + " hours between deployments)")
     # Every month
     elif deployment_frequency < 60 * 60 * 24 * 31:
-        sys.stdout.write("Deployment frequency: High (Average " + str(round(deployment_frequency / 60 / 60 / 24, 2))
-                         + " days between deployments)\n")
+        print("Deployment frequency: High (Average " + str(round(deployment_frequency / 60 / 60 / 24, 2))
+                         + " days between deployments)")
     # Every six months
     elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
-        sys.stdout.write("Deployment frequency: Medium (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-                         + " months bbetween deployments)\n")
+        print("Deployment frequency: Medium (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
+                         + " months bbetween deployments)")
     # Longer than six months
     else:
-        sys.stdout.write("Deployment frequency: Low (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-                         + " months between commit and deploy)\n")
+        print("Deployment frequency: Low (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
+                         + " months between commit and deploy)")
 
 
 def get_change_failure_rate_summary(failure_percent):
     if failure_percent is None:
-        sys.stdout.write("Change failure rate: N/A (no issues or deployments found)\n")
+        print("Change failure rate: N/A (no issues or deployments found)")
     # 15% or less
     elif failure_percent <= 0.15:
-        sys.stdout.write("Change failure rate: Elite (" + str(round(failure_percent * 100, 0)) + "%)\n")
+        print("Change failure rate: Elite (" + str(round(failure_percent * 100, 0)) + "%)")
     # Interestingly, everything else is reported as High to Low
     else:
-        sys.stdout.write("Change failure rate: Low (" + str(round(failure_percent * 100, 0)) + "%)\n")
+        print("Change failure rate: Low (" + str(round(failure_percent * 100, 0)) + "%)")
 
 
 def get_time_to_restore_service_summary(restore_time):
     if restore_time is None:
-        sys.stdout.write("Time to restore service: N/A (no issues or deployments found)\n")
+        print("Time to restore service: N/A (no issues or deployments found)")
     # One hour
     elif restore_time < 60 * 60:
-        sys.stdout.write("Time to restore service: Elite (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between issue opened and deployment)\n")
+        print("Time to restore service: Elite (Average " + str(round(restore_time / 60 / 60, 2))
+                         + " hours between issue opened and deployment)")
     # Every month
     elif restore_time < 60 * 60 * 24:
-        sys.stdout.write("Time to restore service: High (Average " + str(round(restore_time / 60 / 60, 2))
-                         + " hours between issue opened and deployment)\n")
+        print("Time to restore service: High (Average " + str(round(restore_time / 60 / 60, 2))
+                         + " hours between issue opened and deployment)")
     # Every six months
     elif restore_time < 60 * 60 * 24 * 7:
-        sys.stdout.write("Time to restore service: Medium (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " hours between issue opened and deployment)\n")
+        print("Time to restore service: Medium (Average " + str(round(restore_time / 60 / 60 / 24, 2))
+                         + " hours between issue opened and deployment)")
     # Technically the report says longer than six months is low, but there is no measurement
     # between week and six months, so we'll say longer than a week is low.
     else:
-        sys.stdout.write("Deployment frequency: Low (Average " + str(round(restore_time / 60 / 60 / 24, 2))
-                         + " hours between issue opened and deployment)\n")
+        print("Deployment frequency: Low (Average " + str(round(restore_time / 60 / 60 / 24, 2))
+                         + " hours between issue opened and deployment)")
 
 
-sys.stdout.write("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment + "\n")
+print("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment)
 get_change_lead_time_summary(get_change_lead_time())
 get_deployment_frequency_summary(get_deployment_frequency())
 get_change_failure_rate_summary(get_change_failure_rate())
