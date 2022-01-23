@@ -28,11 +28,21 @@ headers = {"X-Octopus-ApiKey": args.octopus_api_key}
 github_auth = HTTPBasicAuth(args.github_user, args.github_token)
 
 
+def parse_github_date(date_string):
+    if date_string is None:
+        return None
+    return datetime.strptime(date_string.replace("Z", "+0000"), '%Y-%m-%dT%H:%M:%S%z')
+
+
+def parse_octopus_date(date_string):
+    if date_string is None:
+        return None
+    return datetime.strptime(date_string[:-3] + date_string[-2:], '%Y-%m-%dT%H:%M:%S.%f%z')
+
+
 def compare_dates(date1, date2):
-    # Python 3.6 doesn't handle the colon in the timezone of a string like "2022-01-04T04:23:02.941+00:00".
-    # So we need to manually strip it out.
-    date1_parsed = datetime.strptime(date1["Created"][:-3] + date1["Created"][-2:], '%Y-%m-%dT%H:%M:%S.%f%z')
-    date2_parsed = datetime.strptime(date2["Created"][:-3] + date2["Created"][-2:], '%Y-%m-%dT%H:%M:%S.%f%z')
+    date1_parsed = parse_octopus_date(date1["Created"])
+    date2_parsed = parse_octopus_date(date2["Created"])
     if date1_parsed < date2_parsed:
         return -1
     if date1_parsed == date2_parsed:
@@ -100,18 +110,6 @@ def get_deployments(space_id, environment_id, project_id):
     sorted_list = sorted(filtered_items, key=cmp_to_key(compare_dates), reverse=True)
 
     return sorted_list
-
-
-def parse_github_date(date_string):
-    if date_string is None:
-        return None
-    return datetime.strptime(date_string.replace("Z", "+0000"), '%Y-%m-%dT%H:%M:%S%z')
-
-
-def parse_octopus_date(date_string):
-    if date_string is None:
-        return None
-    return datetime.strptime(date_string[:-3] + date_string[-2:], '%Y-%m-%dT%H:%M:%S.%f%z')
 
 
 def get_change_lead_time():
