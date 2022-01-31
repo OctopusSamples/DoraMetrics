@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime
 from functools import cmp_to_key
@@ -7,20 +8,50 @@ import argparse
 import pytz
 
 parser = argparse.ArgumentParser(description='Calculate the DORA metrics.')
-parser.add_argument('--octopusUrl', dest='octopus_url', action='store', help='The Octopus server URL',
+parser.add_argument('--octopusUrl',
+                    dest='octopus_url',
+                    action='store',
+                    help='The Octopus server URL',
                     required=True)
-parser.add_argument('--octopusApiKey', dest='octopus_api_key', action='store', help='The Octopus API key',
+parser.add_argument('--octopusApiKey',
+                    dest='octopus_api_key',
+                    action='store',
+                    help='The Octopus API key',
                     required=True)
-parser.add_argument('--githubUser', dest='github_user', action='store', help='The GitHub username',
+parser.add_argument('--githubUser',
+                    dest='github_user',
+                    action='store',
+                    help='The GitHub username',
                     required=True)
-parser.add_argument('--githubToken', dest='github_token', action='store', help='The GitHub token/password',
+parser.add_argument('--githubToken',
+                    dest='github_token',
+                    action='store',
+                    help='The GitHub token/password',
                     required=True)
-parser.add_argument('--octopusSpace', dest='octopus_space', action='store', help='The Octopus space',
+parser.add_argument('--octopusSpace',
+                    dest='octopus_space',
+                    action='store',
+                    help='The Octopus space',
                     required=True)
-parser.add_argument('--octopusProject', dest='octopus_project', action='store',
-                    help='A comma separated list of Octopus projects', required=True)
-parser.add_argument('--octopusEnvironment', dest='octopus_environment', action='store', help='The Octopus environment',
+parser.add_argument('--octopusProject',
+                    dest='octopus_project',
+                    action='store',
+                    help='A comma separated list of Octopus projects',
                     required=True)
+parser.add_argument('--octopusEnvironment',
+                    dest='octopus_environment',
+                    action='store',
+                    help='The Octopus environment',
+                    required=True)
+parser.add_argument("--output",
+                    help="The output format",
+                    dest='output',
+                    nargs='?',
+                    type=str,
+                    const='text',
+                    default='text',
+                    choices=['text', 'json'],
+                    required=False)
 
 args = parser.parse_args()
 
@@ -287,8 +318,17 @@ def get_time_to_restore_service_summary(restore_time):
               + " hours between issue opened and deployment)")
 
 
-print("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment)
-get_change_lead_time_summary(get_change_lead_time())
-get_deployment_frequency_summary(get_deployment_frequency())
-get_change_failure_rate_summary(get_change_failure_rate())
-get_time_to_restore_service_summary(get_time_to_restore_service())
+if args.output == 'text':
+    print("DORA stats for project(s) " + args.octopus_project + " in " + args.octopus_environment)
+    get_change_lead_time_summary(get_change_lead_time())
+    get_deployment_frequency_summary(get_deployment_frequency())
+    get_change_failure_rate_summary(get_change_failure_rate())
+    get_time_to_restore_service_summary(get_time_to_restore_service())
+else:
+    dictionary = {
+        'lead_time': get_change_lead_time(),
+        'deployment_frequency': get_deployment_frequency(),
+        'change_failure_rate': get_change_failure_rate(),
+        'time_to_restore_service': get_time_to_restore_service()
+    }
+    print(json.dumps(dictionary, indent=2))
