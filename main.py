@@ -143,7 +143,7 @@ def get_deployments(space_id, environment_id, project_id):
         return None
 
     url = args.octopus_url + "/api/" + space_id + "/deployments?environments=" + environment_id + "&take=" \
-        + args.octopusDeploymentLimit
+        + str(args.octopusDeploymentLimit)
     response = get(url, headers=headers)
     json = response.json()
 
