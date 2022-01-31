@@ -6,6 +6,7 @@ from requests.auth import HTTPBasicAuth
 from requests import get
 import argparse
 import pytz
+from retrying import retry
 
 parser = argparse.ArgumentParser(description='Calculate the DORA metrics.')
 parser.add_argument('--octopusUrl',
@@ -81,6 +82,7 @@ def compare_dates(date1, date2):
     return 1
 
 
+@retry(stop_max_attempt_number=3, wait_fixed=2000)
 def get_space_id(space_name):
     url = args.octopus_url + "/api/spaces?partialName=" + space_name.strip() + "&take=1000"
     response = get(url, headers=headers)
@@ -96,6 +98,7 @@ def get_space_id(space_name):
     return first_id
 
 
+@retry(stop_max_attempt_number=3, wait_fixed=2000)
 def get_resource_id(space_id, resource_type, resource_name):
     if space_id is None:
         return None
@@ -114,6 +117,7 @@ def get_resource_id(space_id, resource_type, resource_name):
     return first_id
 
 
+@retry(stop_max_attempt_number=3, wait_fixed=2000)
 def get_resource(space_id, resource_type, resource_id):
     if space_id is None:
         return None
@@ -125,6 +129,7 @@ def get_resource(space_id, resource_type, resource_id):
     return json
 
 
+@retry(stop_max_attempt_number=3, wait_fixed=2000)
 def get_deployments(space_id, environment_id, project_id):
     if space_id is None or environment_id is None or project_id is None:
         return None
