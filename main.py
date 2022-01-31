@@ -53,6 +53,14 @@ parser.add_argument("--output",
                     default='text',
                     choices=['text', 'json'],
                     required=False)
+parser.add_argument("--octopusDeploymentLimit",
+                    help='Limit the number of deployments that are considered',
+                    dest='octopusDeploymentLimit',
+                    nargs='?',
+                    type=int,
+                    const=1000,
+                    default=1000,
+                    required=False)
 
 args = parser.parse_args()
 
@@ -134,7 +142,8 @@ def get_deployments(space_id, environment_id, project_id):
     if space_id is None or environment_id is None or project_id is None:
         return None
 
-    url = args.octopus_url + "/api/" + space_id + "/deployments?environments=" + environment_id + "&take=1000"
+    url = args.octopus_url + "/api/" + space_id + "/deployments?environments=" + environment_id + "&take=" \
+        + args.octopusDeploymentLimit
     response = get(url, headers=headers)
     json = response.json()
 
