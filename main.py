@@ -278,7 +278,7 @@ def get_deployment_frequency_summary(deployment_frequency):
     # Every six months
     elif deployment_frequency < 60 * 60 * 24 * 31 * 6:
         print("Deployment frequency: Medium (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
-              + " months bbetween deployments)")
+              + " months between deployments)")
     # Longer than six months
     else:
         print("Deployment frequency: Low (Average " + str(round(deployment_frequency / 60 / 60 / 24 / 31, 2))
