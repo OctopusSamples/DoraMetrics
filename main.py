@@ -55,12 +55,18 @@ parser.add_argument("--output",
                     required=False)
 parser.add_argument("--octopusDeploymentLimit",
                     help='Limit the number of deployments that are considered',
-                    dest='octopusDeploymentLimit',
+                    dest='octopus_deployment_limit',
                     nargs='?',
                     type=int,
                     const=1000,
                     default=1000,
                     required=False)
+parser.add_argument('--githubBugIssueLabel',
+                    dest='github_bug_issue_label',
+                    action='store',
+                    help='The name of the label assigned to an issue that indicates it is a bug. '
+                         + 'If not defined, all issues are considered to be bugs.',
+                    required=True)
 
 args = parser.parse_args()
 
@@ -143,7 +149,7 @@ def get_deployments(space_id, environment_id, project_id):
         return None
 
     url = args.octopus_url + "/api/" + space_id + "/deployments?environments=" + environment_id + "&take=" \
-        + str(args.octopusDeploymentLimit)
+        + str(args.octopus_deployment_limit)
     response = get(url, headers=headers)
     json = response.json()
 
@@ -196,8 +202,14 @@ def get_time_to_restore_service():
                 for work_item in buildInfo["WorkItems"]:
                     api_url = work_item["LinkUrl"].replace("github.com", "api.github.com/repos")
                     commit_response = get(api_url, auth=github_auth)
-                    created_date = parse_github_date(commit_response.json()["created_at"])
-                    if created_date is not None:
+                    issue_json = commit_response.json()["created_at"]
+                    created_date = parse_github_date(issue_json["created_at"])
+
+                    # Scan the list of labels for issues that match the one passed in as an argument
+                    matching_labels = True if not args.github_bug_issue_label \
+                        else len([a for a in issue_json["labels"] if a["name"] == args.github_bug_issue_label]) != 0
+
+                    if created_date is not None and matching_labels:
                         restore_service_times.append((deployment_date - created_date).total_seconds())
     if len(restore_service_times) != 0:
         return sum(restore_service_times) / len(restore_service_times)
